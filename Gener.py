@@ -1,6 +1,7 @@
 import random
 import json
 import tester
+import entropi
 
 # Alla bokstäver
 bok = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
@@ -24,6 +25,9 @@ alla = [
     alla_siffror,
     alla_tecken
 ]
+
+#Lista på möjliga tecken
+possible_characters = []
 
 
 # Siffror, stora bokstäver och tecken är ett valbart alternativ i lösenordet men inte små bokstäver
@@ -72,6 +76,7 @@ def get_rand_item(lista) -> str:
 
 def start_gen():
     skriva_eget = str(input("Vill du generera ett lösenord? "))
+    possible_characters.extend(bok)
 
     if skriva_eget == "ja":
         s_input = str(input("Vill du ändra inställningarna för lösenords genereringen? "))
@@ -81,23 +86,29 @@ def start_gen():
             siffror = (input("Vill du ha siffror i lösenordet "))
             if siffror == "ja":
                 siffror = True
+                possible_characters.extend(alla_siffror)
             else:
                 siffror = False
             cap = (input("Vill du ha stora bokstäver i lösenordet "))
             if cap == "ja":
                 cap = True
+                possible_characters.extend(stora_bok)
             else:
                 cap = False
             tecken = (input("Vill du ha tecken i lösenordet "))
             if tecken == "ja":
                 tecken = True
+                possible_characters.extend(alla_tecken)
             else:
                 tecken = False
         else:
             length = 10
             siffror = True
+            possible_characters.extend(alla_siffror)
             cap = True
+            possible_characters.extend(stora_bok)
             tecken = True
+            possible_characters.extend(alla_tecken)
 
         password = gen_pass(length, siffror, cap, tecken)
         return password
@@ -118,6 +129,7 @@ def check_user(name):
 
         #Kolla om lösenordet är rätt till användaren
         if tester.tester(name, password):
+            print("Lösenordet var correct!")
             fort = input("Vill du byta lösenord ")
             if fort == "ja":
                 return True
@@ -145,7 +157,7 @@ def save(name, password):
     with open("passwords.json", "r") as file:
         file_data = json.load(file)
 
-    # Lägg till data varablen i datan som redan fanns i files
+    # Lägg till den nya användaren i json filen
     file_data.update(data)
 
     # Spara den nya data till filen
@@ -160,6 +172,7 @@ def start():
         # Om den inte gör det generera ett nytt lösenord
         password = start_gen()
         print("Ditt lösenord är " + password)
+        entropi.calculate(possible_characters, password)
 
         # Spara lösenordet och användarnamnet
         save(name, password)
