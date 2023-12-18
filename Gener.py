@@ -134,14 +134,34 @@ def check_user(name):
             if fort == "ja":
                 return True
             else:
-                # OM man inte vill byta kör igen
-                start()
+                ta_bord = input("Vill du ta bort användaren? ")
+                if ta_bord == "ja":
+                    remove_data(name)
+                    print("Användaren är borttagen")
+
+                    start()
+                else:
+                    # OM man inte vill byta kör igen
+                    start()
         else:
             print("Fel lösenord")
             start()
     else:
         print("Användaren finns inte, fortsätter")
         return True
+
+
+def remove_data(user):
+    # Öppna filen med användarna
+    with open("passwords.json", "r") as file:
+        data = json.load(file)
+
+    # Ta bort användaren
+    del data[user]
+
+    # Spara den nya data till filen
+    with open("passwords.json", "w") as file:
+        json.dump(data, file, sort_keys=True, indent=4, separators=(",", ":"))
 
 
 def save(name, password):
@@ -162,7 +182,7 @@ def save(name, password):
 
     # Spara den nya data till filen
     with open("passwords.json", "w") as file:
-        json.dump(file_data, file)
+        json.dump(file_data, file, sort_keys=True, indent=4, separators=(",", ":"))
 
 
 def start():
@@ -176,6 +196,9 @@ def start():
 
         # Spara lösenordet och användarnamnet
         save(name, password)
+
+    if input("Vill du göra det ingen? ") == "ja":
+        start()
 
 
 start()
